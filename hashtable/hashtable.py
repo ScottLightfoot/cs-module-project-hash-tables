@@ -23,7 +23,7 @@ class HashTable:
     def __init__(self, capacity = 8):
         self.capacity = capacity
         self.table = [None] * capacity
-        self.stored = 0
+        self.stored_nodes = 0
         # Your code here
 
 
@@ -46,7 +46,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.stored_nodes / self.capacity
 
 
     def fnv1(self, key, seed=0):
@@ -97,12 +97,12 @@ class HashTable:
         if self.table[idx] == None:
             new_entry = HashTableEntry(key, value)
             self.table[idx] = new_entry
-            self.stored += 1
+            self.stored_nodes += 1
         elif self.table[idx].key == key:
             self.table[idx].value = value
         elif self.table[idx].next == None:
             self.table[idx].next = HashTableEntry(key, value)
-            self.stored += 1
+            self.stored_nodes += 1
         else:
             curr = self.table[idx]
             while curr.key != key:
@@ -111,6 +111,8 @@ class HashTable:
                 elif curr.next == None:
                     curr.next = HashTableEntry(key, value)
                 curr = curr.next
+        if self.get_load_factor() > .7:
+            self.resize(self.capacity*2)
 
 
     def delete(self, key):
@@ -133,8 +135,10 @@ class HashTable:
         if node.key == key and node.next != None:
             self.table[idx] = node.next
             del(node)
+            self.stored_nodes -= 1
         elif node.key == key:
             del(node)
+            self.stored_nodes -= 1
             self.table[idx] = None
         else:
             nxt = node.next
@@ -142,11 +146,15 @@ class HashTable:
                 if nxt.key == key:
                     node.next = nxt.next
                     del(nxt)
+                    self.stored_nodes -= 1
                 node = nxt
                 nxt = node.next
             if nxt.key == key:
                 node.next = nxt.next
                 del(nxt)
+                self.stored -= 1
+        if self.get_load_factor() < .2:
+            self.resize(self.capacity/2)
 
 
     def get(self, key):
@@ -176,6 +184,7 @@ class HashTable:
 
         Implement this.
         """
+        new_capacity = max([8, new_capacity])
         nodes = [i for i in self.table if i != None]
         self.table = [None] * new_capacity
         self.capacity = new_capacity
