@@ -23,6 +23,7 @@ class HashTable:
     def __init__(self, capacity = 8):
         self.capacity = capacity
         self.table = [None] * capacity
+        self.stored = 0
         # Your code here
 
 
@@ -96,10 +97,12 @@ class HashTable:
         if self.table[idx] == None:
             new_entry = HashTableEntry(key, value)
             self.table[idx] = new_entry
+            self.stored += 1
         elif self.table[idx].key == key:
             self.table[idx].value = value
         elif self.table[idx].next == None:
             self.table[idx].next = HashTableEntry(key, value)
+            self.stored += 1
         else:
             curr = self.table[idx]
             while curr.key != key:
@@ -107,7 +110,7 @@ class HashTable:
                     curr.next.value = value
                 elif curr.next == None:
                     curr.next = HashTableEntry(key, value)
-                curr = curr.next  
+                curr = curr.next
 
 
     def delete(self, key):
@@ -119,18 +122,31 @@ class HashTable:
         Implement this.
         """
         idx = self.hash_index(key)
-        if self.get(key) == None:
-            print(f'key "{key}" not found in table')
-        else:
-            self.put(key, None)
+        # # Assign None to key pair value ---
+        # if self.get(key) == None:
+        #     print(f'key "{key}" not found in table')
+        # else:
+        #     self.put(key, None)
 
         # # True delete ---
-        # nxt = self.table[idx]
-        # while nxt.key != key:
-        #     curr = nxt
-        #     nxt = nxt.next
-        # curr.next = nxt.next
-        # nxt = None
+        node = self.table[idx]
+        if node.key == key and node.next != None:
+            self.table[idx] = node.next
+            del(node)
+        elif node.key == key:
+            del(node)
+            self.table[idx] = None
+        else:
+            nxt = node.next
+            while nxt.next != None:
+                if nxt.key == key:
+                    node.next = nxt.next
+                    del(nxt)
+                node = nxt
+                nxt = node.next
+            if nxt.key == key:
+                node.next = nxt.next
+                del(nxt)
 
 
     def get(self, key):
