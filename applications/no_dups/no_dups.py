@@ -1,6 +1,14 @@
 def no_dups(s):
-    # Your code here
+    used = {}
+    out = []
+    for i in s.split(" "):
+        if i in used:
+            pass
+        else:
+            used[i] = 1
+            out.append(i)
 
+    return ' '.join([i for i in out])
 
 
 if __name__ == "__main__":

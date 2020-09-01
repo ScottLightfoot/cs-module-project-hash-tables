@@ -24,7 +24,6 @@ class HashTable:
         self.capacity = capacity
         self.table = [None] * capacity
         self.stored_nodes = 0
-        # Your code here
 
 
     def get_num_slots(self):
